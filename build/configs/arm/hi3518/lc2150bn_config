@@ -1,0 +1,2 @@
+APP_BOARD := lc2150bn
+APP_ALIAS_BOARDS := lc2150bn_v5 lc2150bn_v7

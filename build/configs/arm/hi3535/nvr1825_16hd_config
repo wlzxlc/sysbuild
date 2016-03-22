@@ -1,0 +1,2 @@
+incldue common_config
+APP_BOARD := nvr1825_16hd

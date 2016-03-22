@@ -1,0 +1,196 @@
+#===============================================================================#
+#									SYS-BUILD 说明		                        #
+#===============================================================================#
+版本说明:
+   【1.0】  首次发布推广使用，具备编译内核、bootloader、第三方二级制以及库
+            和可执行文件。
+   【1.1】  调整变量LOCAL_DEPS_MODULES的作用域， 从最初的第三方、内核和boot
+            调整为任意模块。以解决任意模块的先后依赖关系链问题。
+   【1.2】  将LOCAL_DEPS_MODUELS依赖作为每一个LOCAL_SRC_FILES指向的文件依赖，
+            对于第三方库而言指向LOCAL_TARGET_CMD依赖。
+			调整default-application.mk中的sdk和lsp依赖，缺省情况下指向APP_PROJECT_PATH。
+			增加deps-modules-sdk实例。
+   【1.4】  增加对arm64编译环境支持.
+   【1.5】  修改ppc架构的名称ppc到powerpc，修改架构和编译器名称不匹配错误为警告。
+            增加sys-make工具脚本辅助生成make.mk文件。
+   【2.0】  增加板级配置变量APP_ALIAS_BOARDS支持，用于避免板级相同情况下其他参数不同。
+            增加APP_ALIAS_BOARD到对于的Application.mk中，lunch菜单选择使用板级别名，
+			别名可以在任意make.mk中通过TARGET_ALIAS_BOARD得到，如果未指定则等同于
+			TARGET_BOARD.具体用法可以参考Android平台配置。
+            
+一、概述
+	Sys-build编译系统是在Android ndk的编译脚本基础上裁剪而来，它在ndk的基础上
+增加了对内核和bootloader以及第三方的sdk编译支持，也就是说sys-build支持动态库、
+静态库、可执行程序、内核、bootloader、以及第三方sdk的编译。其基本原理和ndk一样，
+分为二部分，一部分为sys-build的编译核心文件，主要是一些编译脚本和可选的sys-build自
+带头文件，这里称之为sys-build编译系统的源码树。另一部分称为sys-build的编译脚本文件
+make.mk，这个文件存在于需要编译的源码或者组件的目录中，随源码一起存放。Sys-build的
+源码树将作为单独的一部分被维护。当一个组件或者项目需要编译时，通过下载sys-build的源
+码树到本地，并将源码树的根加入到您的path环境变量中，然后进入您的组件或者项目中，找到
+有make.mk所在目录，执行sys-build命令即可编译出结果。
+	sys-build还提供tab键填充功能，以简化使用。另外sys-build提供增量编译，一个目
+标如果被编译后不会重复编译，除非所依赖的模块或者文件被更新。对于内核和bootloader的
+编译，提供“O”参数，将编译产生的中间文件保存起来，提供编译效率。sys-build还提供debug
+版本和release版本的编译，debug版本编译主要针对除内核、bootloader和第三方的编译模块，
+它的实现主要是添加编译时的“-g -O0”参数。以方便调试。
+
+二、使用步骤
+	Sys-build源码仓库存放于git@172.16.8.9:/sysdev/makerulers.git,可以通过web查看到
+地址是：http://172.16.8.9:1234/。
+	使用步骤如下：
+
+1、执行如下命令下载sys-build仓库
+	$cd ~/
+	$git clone git@172.16.8.9:/sysdev/makerulers.git
+
+2、初始化sys-build
+	$. ~/sys-build/build/tools/init.sh
+当然，您也可以将sys-build加入到您的path中，不过没有tab填充支持，建议采用上面方式添加
+	$export PATH=$PATH:~/sys-build/
+
+3、编译helloworild程序
+	$cd ~/sys-build/samples/hello-world
+	$sys-build
+编译成功默认在当前目录out下生成3个可执行文件testc、testc++ 和testc_exe！
+
+三、Sys-build 源码树
+	Sys-build源码树主要包含4个文件夹和一个可执行脚本文件，分别是build、sources、
+samples和docs文件夹和sys-build可执行脚本，如下所示：
+			sys-build
+			|-- build
+			|   |-- configs
+			|   |-- core
+			|   |-- gmsl
+			|   `-- tools
+			|-- docs
+			|-- Sys-build
+			|-- samples
+			|   |-- boot
+			|   |-- build-libs
+			|   |-- deps-modules
+			|   |-- deps-relate
+			|   |-- hello-world
+			|   |-- kernel
+			|   |-- prebuit-libs
+			|   `-- sdk
+			`-- sources
+			    `-- include
+其具体的目录解释如下：
+	Build	：该文件夹包含了4个子目录，保存编译系统的核心脚本文件和编译系统当前支持的平台目标
+板配置
+	docs	：包含了一些sys-build自带的帮助文档说明
+	samples	：包含了一些sys-build自带的实例程序
+	Sys-build：可执行脚本文件，执行它可实现组件的编译
+	Sources：可选的文件夹，包含了自带的头文件目录和模块。
+	Configs：保存了所有当前支持的平台相关的板子配置，其结构由<arch>/<platform>/board_name_config
+构成。
+	Core：存放所有sys-build的makefile核心编译脚本文件
+	Gmsl：存放makefile定义的一些扩展函数
+	Tools：存放了sys-build用到的一些shell脚本文件
+	Include：包含了可选的一些组件通用头文件
+	Modules：包含了可选的一些组件经常性依赖的库的模块源码，如自己实现的通用函数库。
+
+四、Sys-build支持的命令行：
+	Sys-build执行命令的一般格式如下：
+
+	$sys-build cmd [args]
+
+所有支持的cmd如下所示：
+----------------------------------------------------------------------------------
+help	：
+	说明：列举支持的所有命令列表及说明
+	示例：$sys-build help
+	注意：该命令是一个make命令，仅当sys-build定义APP_PROJECT_PATH（NDK_PROJECT_PATH）
+变量后有效。
+
+----------------------------------------------------------------------------------
+clean	：
+	说明：清除编译时的所有中间文件和目标文件，该命令对内核和bootloader模块的中间文
+件清理无效，如需要清理，请执行make-xxx或者shell-xxx命令。
+	示例：$sys-build clean
+
+----------------------------------------------------------------------------------
+modules	：
+	说明：列举当前能够编译的所有模块
+	示例：$sys-build modules
+
+----------------------------------------------------------------------------------
+tag-a	：
+	说明：编译所有静态库模块，如果有其他模块被依赖则一同编译
+	示例：$sys-build tag-a
+
+----------------------------------------------------------------------------------
+tag-so	：
+	说明：编译所有动态库模块，如果有其他模块被依赖则一同编译
+	示例：$sys-build tag-so
+
+----------------------------------------------------------------------------------
+tag-exe	：
+	说明：编译所有可执行文件（不包括test程序），如果有其他模块被依赖则一同编译
+	示例：$sys-build tag-exe
+
+----------------------------------------------------------------------------------
+tag-test：
+	说明：编译所有test程序，如果有其他模块被依赖则一同编译
+	示例：$sys-build tag-test
+
+----------------------------------------------------------------------------------
+tag-kernel	：
+	说明：编译所有内核模块，所有被依赖的模块（由LOCAL_DEPS_MODULES定义的模块列表）
+也将被编译
+	示例：$sys-build tag-kernel
+
+----------------------------------------------------------------------------------
+tag-bootloader	：
+	说明：编译所有boot模块，所有被依赖的模块（由LOCAL_DEPS_MODULES定义的模块列表）
+也将被编译
+	示例：$sys-build tag-bootloader
+
+----------------------------------------------------------------------------------
+clean-<module>	：
+	说明：清除由module指定的模块产生的中间文件和目标文件，如果该模块定义
+LOCAL_TARGET_COPY_FILES，则会清除复制到$(APP_OUTPUT_DIR)下的目标文件。
+	示例：$sys-build clean-hello
+
+----------------------------------------------------------------------------------
+config [BoardName]	:
+	说明：配置当前编译环境，会在当前目录生成Application.mk配置文件，如果BoardName为空
+则会弹出选择菜单供用户选择，否则会从configs目录下去匹配BoardName指定的配置文件。
+	示例：$sys-build config
+	或者$sys-build config xx_config
+
+----------------------------------------------------------------------------------
+make-<module>-<ruler [args ] ...>	:
+	说明：将make命令“make ruler args ...”传递到由module指定的LOCAL_TARGET_TOP变量目录，
+module必须是内核模块或者bootloader模块
+	示例：$sys-build make-ipc_kernel-clean ARCH=arm
+
+----------------------------------------------------------------------------------
+shell-<module>-<cmd>	：
+	说明：将shell命令“cmd”传递到由module指定的LOCAL_TARGET_TOP变量目录，暂不支持参数
+传递。该module必须是第三方二进制模块
+	示例：$sys-build shell-sdk-ls
+
+----------------------------------------------------------------------------------
+[module]:
+	说明：编译由module指定的模块module的值等于编译脚本make.mk中定义的LOCAL_MODULE值
+，如果该模块依赖其他模块，其他模块也会被编译。如果module为空则编译所有模块
+	示例：$sys-build hello
+	注意：如果引用的模块名带有lib前缀，则视为无效，此时有效的模块名被退化为无lib前缀。
+
+----------------------------------------------------------------------------------
+[make_command]	：
+	说明：同样，sys-build支持所有的make命令行make_command
+	示例：$sys-build --help
+	或者
+	$sys-build -n
+	或者
+	$sys-build V=1
+
+四、编译器特性属性扩展
+  1、compiler.mk
+     该文件默认读取位置为build/config/$(TARGET_ARCH)/$(TARGET_PLATFORM)/$(TARGET_BOARD)中，
+允许用户对特定编译追加TARGET_CFLAGS、TARGET_LDFLAGS等标志，除此之外还可自定义一些变量和函数，
+该文件作用范围为任何make.mk中。具体请参考android平台定义规则。
+
+

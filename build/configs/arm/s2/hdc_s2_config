@@ -1,0 +1,2 @@
+APP_BOARD := hdc_s2
+APP_ALIAS_BOARDS := hdc_s2_v5 hdc_s2_v7

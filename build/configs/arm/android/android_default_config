@@ -1,0 +1,3 @@
+APP_BOARD := android_default
+APP_VENDOR := kedacom
+APP_ALIAS_BOARDS := hd508 pc3

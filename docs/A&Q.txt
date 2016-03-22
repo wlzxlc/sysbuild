@@ -1,0 +1,148 @@
+#===============================================================================#
+#									问与答		                                #
+#===============================================================================#
+
+Q0、如何开始编译一个hello模块？
+	A、请参考SYS-BUILD.txt文档说明
+
+
+Q1、为什么我单独编译一个模块时是正常的，但到其他目录去编译总提示这个模块的源文件
+找不到或者头文件找不到又或者它包含的其他make.mk文件找不到？
+	A：请检查您出错的模块，在包含文件的路径上是否出现问题，或者该模块是否包
+含了include $(CLEAR_VARS)，更多请参考问题Q3，也可以使用NDK_LOG=1和
+NDK_DEBUG_MODULES=1选项进行编译调试，用法如下：
+	$sys-build NDK_LOG=1
+
+
+Q2、怎么让sys-build自动提示命令行填充功能，我已经将sys-build根目录加入path了可还
+是不行？
+A：sys-build提供的智能填充功能只有通过执行如下命令后才会有：
+	$. $(sys-build-top)/build/tools/init.sh
+建议在下载sys-build源码树后直接执行该命令,之后您可以在任意地方使用sys-build。
+
+
+Q3、我不知道在编写make.mk脚本时什么时候该使用$(LOCAL_PATH)，什么时候不该使用，比如
+在指定头文件路径 LOCAL_C_INCLUDES或是指定源文件LOCAL_SRC_FILES是否在前面都需要加上
+$(LOCAL_PATH)?
+	A：LOCAL_PATH定义的目的是让sys-build能正确找到您所引用的源文件及其他include
+的文件，其值等于相对于APP_PROJECT_PATH的路径，也就是当前make.mk所在路径，在设置依赖
+源文件的时候sys-build内部会自动为您加上LOCAL_PATH变量，因此在LOCAL_SRC_FILES的赋值
+中您不用为每一个源文件路径前加上LOCAL_PATH，而且您所指定的每一个源文件都必须真实存
+在。而定义头文件路径时不同，头文件路径可以是一个绝对路径也可是一个相对路径，sys-build
+在编译时并不会为它自动加上LOCAL_PATH，因为sys-build不知道它是一个绝对还是一个相对路径，
+而且，编译器也不需要知道这个头文件路径是否真实有效，因此，在定义头文件LOCAL_C_INCLUDES
+变量时，您可以为您每一个相对路径都加上LOCAL_PATH，这有助于您的make.mk被其他模块包含时依
+然能正确找到这些头文件，如果是绝对路径则不需要加。
+	对于make.mk中函数参数如果是路径，到底是否需要加上LOCAL_PATH?make.mk的函数不外乎
+如下几个，具体的情况可以参考make_mk.txt文件说明。情况如下：
+include-makefile：
+	它的用法和include用法一致，如果您确定您的模块不会被其他模块包含可以
+不加，否则请加上LOCAL_PATH以增强脚本健壮性。如果您的脚本路径是通过调用函数返回，那起决
+于您调用函数的返回值。如果的路径是绝对路径，那不需要加。
+
+all-subdir-makefiles：
+	返回当前目录中所有子目录下的make.mk列表，它相当于$(call all-makefiles-under,\
+$(LOCAL_PATH))，因此通过它返回的make.mk在调用include-makefile时不需要加LOCAL_PATH。
+
+all-makefiles-under：
+	通过该函数返回的make.mk路径是否加上了LOCAL_PATH，完全取决于您给的
+路径是否加上，例如上面的all-subdir-makefiles实现就自动加上了。
+
+get-all-wildcard-files：
+	返回值的路径和参数路径一样。
+
+include-all-subs-makefile：
+	该函数的路径列表可有可无LOCAL_PATH，如指定的是相对路径，建议
+加上LOCAL_PATH，以增强健壮性。
+	对于变量赋值情况，如LOCAL_TARGET_TOP它可以不加，但为了使你的make.mk文件变得健壮，
+比如，在某一个make.mk包含这个make.mk时，如果你赋值为相对路径，那么很可能出错，因此，如
+果是相对路径建议加上LOCAL_PATH，如果是绝对路径则不需要加上。
+
+
+Q4、我在调用include-makefile或者include或者include-all-subs-makefile包含其他make.mk脚本
+时很担心make.mk被重复包含，怎么办?
+	A、如果在所有脚本中包含其他make.mk文件都采用了include-makefile或者
+include-all-subs-makefile则不必担心，sys-build会自动为您解决重复包含问题，如果您是直接
+使用include进行包含，则有可能重复包含，导致出现不必要的错误，正确的做法是使用
+include-makefile或者include-all-subs-makefile。
+
+**注意**：如果您的脚本名不是make.mk则有可能重复包含，sys-build只检查命名为make.mk脚
+本是否被重复包含问题。
+
+
+Q5、我每次执行sys-build时都需要修改一下Application.mk环境编译，例如APP_ARM_TOOLCHAIN值，
+但我想用脚本调用sys-build实现自动化编译，怎么办？
+	A、sys-build为当前编译环境提供了自动生成配置环境变量的功能，默认为x86配置，
+这些变量都被记录在Applicaton.mk中，如果您确实有需要自动修改或者覆盖Applicaton.mk中的变量，
+最简单的做法就是将变量值通过sys-build命令行传入，例如：
+	$sys-build APP_ARM_TOOLCHAIN=/opt/bin/arm-linux-
+
+
+Q6、我在编写一个动态库和静态库时候发现他们的名字总是和在模块名字前面加上lib和后缀，但我想
+要的名字是像这样的：libtest.a和libtest.so，我该怎么办？
+	A、您可以使用LOCAL_MODULE_FILENAME来规定你想要生成的模块名字，例如
+LOCAL_MODULE_FILENAME := libtest ，最后在生成库的时候sys-build自动给他们加后缀，你不需要
+自己加。如果编译非库而是可执行文件，最后生成的名字完全由LOCAL_MODULE_FILENAME规定。可以参
+考make_mk.txt相关说明。
+
+
+Q7、用在编译第三方二进制时想把从LOCAL_TARGET_COPY复制过来的文件发布到不同的目录，但似乎
+sys-build无法做到？
+	A、对于这类处理sys-build完全可以做到，假设你定义的LOCAL_TARGET_COPY包含
+了一些头文件和库文件，在定义LOCAL_RELEASE_PATH的时候想把头文件放在一个发布目录，库文件
+放在一个目录，那可以分为3个模块。示例如下：
+-------------------------------------------------------------------------------------
+	LOCAL_PATH := $(call my-dir)
+	include $(CLEAR_VARS)
+	LOCAL_MODULE := COMPILE_SDK
+	LOCAL_TARGET_TOP := $(LOCAL_PATH)/../sdk
+	LOCAL_TARGET_CMD := <your commands >
+	include $(BUILD_TH3_BINARY)
+	
+	include $(CLEAR_VARS)
+	LOCAL_MODULE := SDK_COPY_INC
+	LOCAL_TARGET_TOP := $(LOCAL_PATH)/../sdk
+	LOCAL_TARGET_COPY_FILES := inc/config.h
+	LOCAL_RELEASE_PATH := $(APP_PROJECT_PATH)/release/include
+	LOCAL_DEPS_MODULES := COMPILE_SDK
+	include $(BUILD_TH3_BINARY)
+	
+	include $(CLEAR_VARS)
+	LOCAL_MODULE := SDK_COPY_LIB
+	LOCAL_TARGET_TOP := $(LOCAL_PATH)/../sdk
+	LOCAL_TARGET_COPY_FILES := lib/libtest.so
+	LOCAL_RELEASE_PATH := $(APP_PROJECT_PATH)/release/libs
+	LOCAL_DEPS_MODULES := COMPILE_SDK
+	include $(BUILD_TH3_BINARY)
+-------------------------------------------------------------------------------------
+当然，如果你觉得上面的代码麻烦，你完全可以用foreach和eval关键字去实现上面的代码。它看起
+来可能像下面的代码：
+-------------------------------------------------------------------------------------
+	$(foreach module,$(my_all_modules),\
+	        $(eval include $(CLEAR_VARS)) \
+	        $(eval LOCAL_MODULE := $(module)) \
+	        $(eval LOCAL_TARGET_TOP := .) \
+	        $(eval LOCAL_TARGET_COPY_FILES := $(filter %$(suffix $(module)),$(my_all_copy_files))) \
+	        $(eval LOCAL_RELEASE_PATH := ./$(module)) \
+	        $(eval include $(BUILD_TH3_BINARY)) \
+	)
+-------------------------------------------------------------------------------------
+
+
+Q8、为什么我执行sys-build的时候总是显示如下警告?
+-------------------------------------------------------------------------------------
+SYS-BUILD: WARNING: May be you are try Compiling a sub-make.    
+SYS-BUILD:      But the TARGET_SDK_DIR or TARGET_LSP_DIR variables no define.    
+SYS-BUILD:      They depends APP_WORKSPACE  directory. If you need to use them.    
+SYS-BUILD:      Please define them or redefine the APP_WORKSPACE variable to point a valid workspace ! 
+-------------------------------------------------------------------------------------
+    A、这是因为你当前可能试图编译子make.mk，但是变量TARGET_SDK_DIR 或者TARGET_LSP_DIR
+可能没有定义，如果你需要在make.mk中用到上述变量，那么你很可能需要指定他们，或者指定
+APP_WORKSPACE的值，当然，如果不需要则忽略这个警告。指定的方式一般如下：
+------------------------------------------------------------------
+| $sys-build TARGET_SDK_DIR=<sdk_path> TARGET_LSP_DIR=<lsp_path> |
+------------------------------------------------------------------ 
+  或者
+------------------------------------------------------------------
+| $sys-build APP_WORKSPACE=<your workspace>                      |
+------------------------------------------------------------------ 

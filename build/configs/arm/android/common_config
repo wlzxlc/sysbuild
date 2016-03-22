@@ -1,0 +1,9 @@
+APP_PLATFORM := android
+APP_VENDOR   := unknown
+APP_ARCH := arm
+APP_ABI := armeabi-v7a
+
+APP_ARM_TOOLCHAIN := /opt/arm-linux-androideabi-4.6/bin/arm-linux-androideabi-
+APP_SDK_DIR := $(APP_WORKSPACE)
+APP_LSP_DIR := $(APP_WORKSPACE)
+APP_RELEASE_DIR := $(APP_WORKSPACE)/release

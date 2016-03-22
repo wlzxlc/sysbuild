@@ -1,0 +1,12 @@
+APP_PLATFORM := am1808
+APP_VENDOR   := ti
+APP_ARCH := arm
+APP_ABI := armeabi
+
+APP_ARM_TOOLCHAIN := /opt/CodeSourcery/Sourcery_G++_Lite/bin/arm-none-linux-gnueabi-
+
+#APP_SDK_DIR := $(APP_WORKSPACE)/sdks/$(APP_VENDOR)/hi35xx
+APP_LSP_DIR := $(APP_WORKSPACE)/packages/linux_lsp
+APP_RELEASE_DIR := $(APP_WORKSPACE)/release
+
+

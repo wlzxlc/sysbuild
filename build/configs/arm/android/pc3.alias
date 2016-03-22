@@ -1,0 +1,2 @@
+APP_ARM_TOOLCHAIN := /opt/android-ndk-r10d/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+APP_TOOLCHAIN_SYSROOT := /opt/android-ndk-r10d/platforms/android-21/arch-arm

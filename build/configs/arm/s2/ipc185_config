@@ -1,0 +1,2 @@
+APP_BOARD := ipc185
+APP_ALIAS_BOARDS := ipc185_v5 ipc185_v7

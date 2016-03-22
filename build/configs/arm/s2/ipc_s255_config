@@ -1,0 +1,2 @@
+APP_BOARD := ipc_s255
+APP_ALIAS_BOARDS := ipc_s255_v5 ipc_s255_v7

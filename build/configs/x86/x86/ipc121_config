@@ -1,0 +1,9 @@
+APP_ARCH := x86
+APP_ABI := x86
+APP_PLATFORM := x86
+APP_BOARD := ipc121
+
+#default, no define it
+#APP_WORKSPACE := $(APP_PROJECT_PATH)
+APP_LSP_DIR := $(APP_WORKSPACE)/packages/linux_lsp
+APP_RELEASE_DIR := $(APP_WORKSPACE)/release

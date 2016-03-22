@@ -1,0 +1,2 @@
+APP_BOARD := hdc8118
+APP_VENDOR := ambarella 

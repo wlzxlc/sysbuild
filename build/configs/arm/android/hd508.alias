@@ -1,0 +1,1 @@
+APP_ARM_TOOLCHAIN := /opt/arm-linux-androideabi-4.6/bin/arm-linux-androideabi-

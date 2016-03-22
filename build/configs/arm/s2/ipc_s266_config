@@ -1,0 +1,2 @@
+APP_BOARD := ipc_s266
+APP_ALIAS_BOARDS := ipc_s266_v5 ipc_s266_v7
