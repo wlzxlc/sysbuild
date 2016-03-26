@@ -49,9 +49,7 @@ java_objs_dir := $(JAVA_JAR_DIR)/src
 get-all-javas := $(java_src_files)
 java_objs_class_dir := $(java_objs_dir)
 
-$(if $(java_deps_jars),$(eval $(java_deps_jars):$(java_objs_class_dir)), \
-	$(eval java_deps_jars := $(java_objs_class_dir)))
-
+$(if $(java_deps_jars),$(eval $(java_deps_jars):$(java_objs_class_dir)),)
 
 java_all_class :=
 java_all_org_src :=
