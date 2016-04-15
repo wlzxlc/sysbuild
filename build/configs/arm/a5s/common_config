@@ -1,9 +1,0 @@
-APP_PLATFORM := a5s
-APP_VENDOR   := ambarella
-APP_ARCH := arm
-APP_ABI := armeabi
-
-APP_ARM_TOOLCHAIN := /opt/ambarella/a5s/toolchain/arm-2011.09/bin/arm-none-linux-gnueabi-
-APP_SDK_DIR := $(APP_WORKSPACE)/sdks/$(APP_VENDOR)/$(APP_PLATFORM)
-APP_LSP_DIR := $(APP_WORKSPACE)/packages/linux_lsp
-APP_RELEASE_DIR := $(APP_WORKSPACE)/release

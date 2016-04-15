@@ -1,2 +1,0 @@
-APP_BOARD := ipc_s2
-APP_ALIAS_BOARDS := ipc_s2_v5 ipc_s2_v7

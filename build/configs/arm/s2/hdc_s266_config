@@ -1,2 +1,0 @@
-APP_BOARD := hdc_s266
-APP_ALIAS_BOARDS := hdc_s266_v5 hdc_s266_v7

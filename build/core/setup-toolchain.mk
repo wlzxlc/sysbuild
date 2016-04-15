@@ -23,6 +23,11 @@ CURRENT_TARGET_ARCH :=
 ifeq ($(TARGET_ARCH),x86)
  CURRENT_TARGET_ARCH :=X86
 endif
+
+ifeq ($(TARGET_ARCH),x86_64)
+ CURRENT_TARGET_ARCH :=X64
+endif
+
 ifeq ($(TARGET_ARCH),arm)
  CURRENT_TARGET_ARCH :=ARM
 endif
@@ -36,7 +41,7 @@ ifeq ($(TARGET_ARCH),powerpc)
  CURRENT_TARGET_ARCH :=PPC
 endif
 
-TOOLCHAIN_PREFIX := $(strip $(APP_$(CURRENT_TARGET_ARCH)_TOOLCHAIN))
+TOOLCHAIN_PREFIX := $(strip $(APP_TOOLCHAIN))
 
 ifndef TOOLCHAIN_PREFIX
 $(call __ndk_warning,"Invalid APP_$(CURRENT_TARGET_ARCH)_TOOLCHAIN defined \
@@ -94,7 +99,11 @@ ifdef __USE_NDK__
 include $(NDK_TOOLCHAIN.$(TARGET_TOOLCHAIN).setup)
 endif #__USE_NDK__
 
--include $(SYSBUILD_ROOT)/build/configs/$(TARGET_ARCH)/$(TARGET_PLATFORM)/compiler.mk
+compiled_mk := $(NDK_ROOT)build/configs/$(TARGET_PLATFORM).mk
+ifdef NDK_LOG
+ $(call ndk_log, Try include compile configure '$(compiled_mk)')
+endif
+-include $(compiled_mk)
 
 ifdef SYSROOT_INC
 TARGET_C_INCLUDES += $(SYSROOT_INC)/usr/include

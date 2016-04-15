@@ -1,1 +1,0 @@
-APP_ARM_TOOLCHAIN := /opt/ambarella/linaro-2014.06/linaro-multilib-2014.06-gcc4.9/bin/arm-linux-gnueabihf-

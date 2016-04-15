@@ -112,9 +112,7 @@ SYSBUILD_PROJECT_PATH := $(strip $(SYSBUILD_PROJECT_PATH))
 # SYSBUILD_PROJECT_PATH
 #
 ifndef SYSBUILD_PROJECT_PATH
-    ifneq (,$(strip $(wildcard make.mk)))
-        SYSBUILD_PROJECT_PATH := $(abspath .)
-    endif
+   SYSBUILD_PROJECT_PATH := $(abspath .)
 endif
 #ifndef SYSBUILD_PROJECT_PATH
 #    SYSBUILD_PROJECT_PATH := $(abspath $(call find-project-dir,.,make.mk))

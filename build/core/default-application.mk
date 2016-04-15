@@ -23,27 +23,28 @@ APP_BUILD_SCRIPT := $(APP_PROJECT_PATH)/make.mk
 #debug
 APP_OPTIM := release
 
-APP_STL := 
+APP_STL :=
 APP_OUTPUT_DIR := out
 #1
-APP_DEBUG_MODULES := 
+APP_DEBUG_MODULES :=
 #1
-NDK_LOG := 
+NDK_LOG :=
 APP_MODULES :=
 
-APP_ARCH := x86
-APP_ABI  := x86
-APP_PLATFORM := x86
-APP_BOARD := default_board
+APP_ARCH := x86_64
+APP_ABI  := x86_64
+APP_PLATFORM := intel
+APP_BOARD := default_board_name
+APP_ALIAS_BOARD := default_alias_board_name
 
-APP_X86_TOOLCHAIN :=
-APP_MIPS_TOOLCHAIN := mips-linux-
-APP_PPC_TOOLCHAIN := ppc-linux-
-APP_ARM_TOOLCHAIN := arm-none-linux-gnueabi- 
-APP_TOOLCHAIN_SYSROOT :=
+APP_TOOLCHAIN :=
+APP_TOOLCHAIN_SYSROOT := x86_64-linux-gnu-
 
 APP_WORKSPACE := $(APP_PROJECT_PATH)
 
-APP_SDK_DIR := $(APP_PROJECT_PATH)
-APP_LSP_DIR := $(APP_PROJECT_PATH)
-APP_RELEASE_DIR :=
+APP_SDK_DIR :=.
+APP_LSP_DIR :=.
+APP_RELEASE_DIR := out/release
+
+NDK_APP_APPLICATION_CONFIG_MK = $(wildcard config.mk)
+-include $(NDK_APP_APPLICATION_CONFIG_MK)

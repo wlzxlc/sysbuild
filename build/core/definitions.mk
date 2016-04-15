@@ -1421,9 +1421,9 @@ endif
 $$(call generate-file-dir,$$(_OBJ))
 ifndef __USE_NDK__
  # we are don't to dependent Application.mk file. because we were define LOCAL_RELATE_MODE.
-$$(_OBJ): $$(_SRC) $$(LOCAL_MAKEFILE)  $$(NDK_DEPENDENCIES_CONVERTER)
+$$(_OBJ): $$(_SRC) $$(LOCAL_MAKEFILE)  $$(NDK_DEPENDENCIES_CONVERTER) $$(NDK_APP_APPLICATION_MK) $$(NDK_APP_APPLICATION_CONFIG_MK)
 else
-$$(_OBJ): $$(_SRC) $$(LOCAL_MAKEFILE) $$(NDK_APP_APPLICATION_MK) $$(NDK_DEPENDENCIES_CONVERTER)
+$$(_OBJ): $$(_SRC) $$(LOCAL_MAKEFILE) $$(NDK_APP_APPLICATION_MK) $$(NDK_DEPENDENCIES_CONVERTER) $$(NDK_APP_APPLICATION_CONFIG_MK)
 endif
 	@$$(HOST_ECHO) "$$(PRIVATE_TEXT)  : $$(PRIVATE_MODULE) <= $$(notdir $$(PRIVATE_SRC))"
 	$$(hide) $$(PRIVATE_CC) -MMD -MP -MF $$(call convert-deps,$$(PRIVATE_DEPS)) $$(PRIVATE_CFLAGS) $$(call host-path,$$(PRIVATE_SRC)) -o $$(call host-path,$$(PRIVATE_OBJ)) \

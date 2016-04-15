@@ -1,8 +1,0 @@
-APP_ARCH := x86
-APP_ABI := x86
-APP_PLATFORM := x86
-APP_BOARD := default_board
-
-#default, no define it
-#APP_WORKSPACE := /home/users/projects/x86_project
-

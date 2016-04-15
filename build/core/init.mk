@@ -460,24 +460,6 @@ include $(BUILD_SYSTEM)/definitions.mk
 
 
 #get all support archs
-NDK_ALL_ARCHS := $(sort $(shell ls $(NDK_ROOT)/build/configs))
-
-#get all support platforms
-$(foreach arch,$(NDK_ALL_ARCHS), \
-$(eval NDK_ALL_$(arch)_PLATFORMS := $(sort $(shell ls $(NDK_ROOT)/build/configs/$(arch)))))
-
-#get all support boards
-$(foreach arch,$(NDK_ALL_ARCHS),$(foreach platform,$(NDK_ALL_$(arch)_PLATFORMS),\
-$(eval NDK_ALL_$(arch)_$(platform)_BOARDS := $(patsubst %_config,%,$(sort $(filter-out common_config,\
-$(shell ls $(NDK_ROOT)/build/configs/$(arch)/$(platform))))))))
-
-NDK_ALL_ABIS :=$(sort armeabi  armeabi-v7a arm64-v8a $(filter-out arm,$(NDK_ALL_ARCHS)))
-
-$(foreach abi,$(NDK_ALL_ABIS),$(if $(filter arm%,$(abi)),$(eval NDK_ABI.$(abi).arch=arm),$(eval NDK_ABI.$(abi).arch=$(abi))))
-
-$(call ndk_log,Current support ARCHS: $(NDK_ALL_ARCHS))
-
-$(foreach arch,$(NDK_ALL_ARCHS),$(call ndk_log,Support ARCH:$(arch)); \
-  $(foreach plat,$(NDK_ALL_$(arch)_PLATFORMS),$(call ndk_log,Support PLATFORM:$(plat));$(call ndk_log,Support BOARDS:$(NDK_ALL_$(arch)_$(plat)_BOARDS))))
-$(call ndk_log,Support ALL ABIS: $(NDK_ALL_ABIS))
+NDK_ALL_ARCHS := arm arm64 x86 x86_64
+NDK_ALL_ABIS := armeabi armeabi-v7a arm64-v8a x86 x86_64
 

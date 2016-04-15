@@ -47,19 +47,18 @@ else
  TARGET_ARCH :=$(empty)
 endif
 ifndef TARGET_ARCH
-$(call __ndk_info,Unsupport ARCH '$(APP_ARCH)' Settings.)  
-$(call __ndk_error,Aborting...)  
+$(call __ndk_info, Invalid ARCH '$(TARGET_ARCH)')
+$(call __ndk_error,Aborting...)
 endif
 
 TARGET_PLATFORM := $(call get,$(_map),APP_PLATFORM)
-ifeq ($(words $(TARGET_PLATFORM)),1)
-  TARGET_PLATFORM :=$(strip $(filter $(TARGET_PLATFORM),$(NDK_ALL_$(TARGET_ARCH)_PLATFORMS)))
-else
+ifneq ($(words $(TARGET_PLATFORM)),1)
   TARGET_PLATFORM :=$(empty)
 endif
+
 ifndef TARGET_PLATFORM
-$(call __ndk_info,The current ARCH '$(TARGET_ARCH)' and  PLATFORM '$(APP_PLATFORM)' settings not match.)  
-$(call __ndk_error,Aborting...)  
+$(call __ndk_info, Invalid platform '$(TARGET_PLATFORM)')
+$(call __ndk_error,Aborting...)
 endif
 
 TARGET_ABI := $(call get,$(_map),APP_ABI)
@@ -78,15 +77,15 @@ endif
 NDK_APP_ABI :=$(TARGET_ABI)
 
 TARGET_BOARD := $(call get,$(_map),APP_BOARD)
-ifeq ($(words $(TARGET_BOARD)),1)
-  TARGET_BOARD :=$(filter $(TARGET_BOARD),$(NDK_ALL_$(TARGET_ARCH)_$(TARGET_PLATFORM)_BOARDS))
-else
+ifneq ($(words $(TARGET_BOARD)),1)
   TARGET_BOARD :=$(empty)
 endif
+
 ifndef TARGET_BOARD
-$(call __ndk_info,The current PLATFORME '$(TARGET_PLATFORM)' and  BOARD '$(APP_BOARD)' settings not match.)      
+$(call __ndk_info, Invalid board '$(TARGET_BOARD)')
 $(call __ndk_error,Aborting...)
 endif
+
 TARGET_VENDOR := $(call get,$(_map),APP_VENDOR)
 
 TARGET_WORKSPACE := $(call get,$(_map),APP_WORKSPACE)
