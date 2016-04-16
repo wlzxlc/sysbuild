@@ -46,5 +46,10 @@ APP_SDK_DIR :=.
 APP_LSP_DIR :=.
 APP_RELEASE_DIR := out/release
 
-NDK_APP_APPLICATION_CONFIG_MK = $(wildcard config.mk)
+NDK_APP_APPLICATION_CONFIG_MK := $(wildcard config.mk)
 -include $(NDK_APP_APPLICATION_CONFIG_MK)
+
+__ndk_user_config := $(wildcard $(APP_USER_CONFIG))
+NDK_APP_APPLICATION_CONFIG_MK += $(__ndk_user_config)
+
+-include $(wildcard $(__ndk_user_config))
