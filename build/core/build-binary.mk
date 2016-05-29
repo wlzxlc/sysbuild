@@ -63,10 +63,10 @@ system_libs := \
 libs_in_ldflags := $(filter-out $(addprefix -l,$(system_libs)), $(libs_in_ldflags))
 
 ifneq (,$(strip $(libs_in_ldflags)))
-  $(call __ndk_info,WARNING:$(LOCAL_MAKEFILE):$(LOCAL_MODULE): non-system libraries in linker flags: $(libs_in_ldflags))
-  $(call __ndk_info,    This is likely to result in incorrect builds. Try using LOCAL_STATIC_LIBRARIES)
-  $(call __ndk_info,    or LOCAL_SHARED_LIBRARIES instead to list the library dependencies of the)
-  $(call __ndk_info,    current module)
+  #$(call __ndk_info,WARNING:$(LOCAL_MAKEFILE):$(LOCAL_MODULE): non-system libraries in linker flags: $(libs_in_ldflags))
+  #$(call __ndk_info,    This is likely to result in incorrect builds. Try using LOCAL_STATIC_LIBRARIES)
+  #$(call __ndk_info,    or LOCAL_SHARED_LIBRARIES instead to list the library dependencies of the)
+  #$(call __ndk_info,    current module)
 endif
 LOCAL_LINK_MODE := $(strip $(LOCAL_LINK_MODE))
 ifdef LOCAL_LINK_MODE
